@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    width: 100%;
+  }
+  body {
+    @apply bg-light text-secondary;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    width: 100%;
+    position: relative;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+  
+  /* Fix for mobile viewport */
+  #__next {
+    overflow-x: hidden;
+    width: 100%;
+  }
+}
+
+@layer components {
+  .container {
+    @apply px-4 mx-auto max-w-7xl w-full;
+  }
+  .btn {
+    @apply px-6 py-3 font-medium transition-colors rounded-md;
+  }
+  .btn-primary {
+    @apply text-white bg-primary hover:bg-opacity-90;
+  }
+  .btn-secondary {
+    @apply text-white bg-secondary hover:bg-opacity-90;
+  }
+  .section {
+    @apply py-16 md:py-24 overflow-hidden;
+  }
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  /* Mobile text adjustments */
+  @media (max-width: 640px) {
+    h1 {
+      @apply text-3xl;
+    }
+    h2 {
+      @apply text-2xl;
+    }
+    p {
+      @apply text-base;
+    }
+    .btn {
+      @apply px-4 py-2 text-sm;
+    }
+  }
+} 
