@@ -61,6 +61,9 @@ export default function Navbar() {
     
     window.addEventListener('scroll', handleScroll);
     
+    // Add touchstart event listener for iOS devices
+    document.addEventListener('touchstart', function() {}, {passive: false});
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -87,42 +90,91 @@ export default function Navbar() {
   // Function to handle smooth scrolling
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement> | React.TouchEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
-    const targetElement = document.getElementById(targetId);
     
-    if (targetElement) {
-      // Calculate offset for fixed header - add extra padding for mobile
-      const navHeight = navRef.current?.offsetHeight || 0;
-      const isMobile = window.innerWidth < 768;
-      const mobileOffset = isMobile ? 20 : 0; // Extra offset for mobile
-      const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navHeight - mobileOffset;
+    // Store current menu state and scroll position
+    const menuWasOpen = isMenuOpen;
+    const scrollYPosition = window.scrollY;
+    
+    // If menu is open, close it first
+    if (isMenuOpen) {
+      // Reset body styles immediately
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
       
-      // First update URL hash
-      window.history.pushState(null, '', `#${targetId}`);
-      
-      // Set active section
-      setActiveSection(targetId);
-      
-      // Handle menu closing with a slight delay to allow scrolling to start
-      if (isMenuOpen) {
-        // Small timeout to ensure the scroll happens before menu closes
-        setTimeout(() => {
-          // Reset body styles
-          document.body.style.overflow = '';
-          document.body.style.position = '';
-          document.body.style.width = '';
-          document.body.style.top = '';
-          
-          // Close the menu
-          setIsMenuOpen(false);
-        }, 300);
-      }
-      
-      // Scroll to the target element
-      window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-      });
+      // Close the menu
+      setIsMenuOpen(false);
     }
+    
+    // Use setTimeout to ensure DOM updates before scrolling
+    setTimeout(() => {
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        // Calculate offset for fixed header - add extra padding for mobile
+        const navHeight = navRef.current?.offsetHeight || 0;
+        const isMobile = window.innerWidth < 768;
+        const mobileOffset = isMobile ? 30 : 0; // Extra offset for mobile
+        
+        // Recalculate position after menu is closed
+        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navHeight - mobileOffset;
+        
+        // Update URL hash
+        window.history.pushState(null, '', `#${targetId}`);
+        
+        // Set active section
+        setActiveSection(targetId);
+        
+        // Scroll to the target element
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 50); // Small delay to ensure DOM updates
+  };
+
+  // Function to handle direct navigation without using Link component
+  const handleDirectNavigation = (targetId: string) => {
+    // Close the menu
+    if (isMenuOpen) {
+      // Reset body styles immediately
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      
+      // Close the menu
+      setIsMenuOpen(false);
+    }
+    
+    // Use setTimeout to ensure DOM updates before scrolling
+    setTimeout(() => {
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        // Calculate offset for fixed header - add extra padding for mobile
+        const navHeight = navRef.current?.offsetHeight || 0;
+        const isMobile = window.innerWidth < 768;
+        const mobileOffset = isMobile ? 30 : 0; // Extra offset for mobile
+        
+        // Calculate position
+        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navHeight - mobileOffset;
+        
+        // Update URL hash
+        window.history.pushState(null, '', `#${targetId}`);
+        
+        // Set active section
+        setActiveSection(targetId);
+        
+        // Scroll to the target element
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 50);
   };
 
   const getLinkClass = (section: string) => {
@@ -166,7 +218,6 @@ export default function Navbar() {
               href={`#${section}`} 
               className={getLinkClass(section)}
               onClick={(e) => handleSmoothScroll(e, section)}
-              onTouchEnd={(e) => handleSmoothScroll(e, section)}
             >
               {section.charAt(0).toUpperCase() + section.slice(1)}
               <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-primary transform scale-x-0 transition-transform duration-300 ${
@@ -178,7 +229,6 @@ export default function Navbar() {
             href="#reservation" 
             className={`btn btn-primary transform transition-transform duration-300 hover:scale-105 text-sm lg:text-base`}
             onClick={(e) => handleSmoothScroll(e, 'contact')}
-            onTouchEnd={(e) => handleSmoothScroll(e, 'contact')}
           >
             Reserve a Table
           </Link>
@@ -261,33 +311,29 @@ export default function Navbar() {
           </div>
           
           {['about', 'menu', 'testimonials', 'contact'].map((section, index) => (
-            <Link 
+            <div 
               key={section}
-              href={`#${section}`} 
-              className={`text-white text-xl font-medium hover:text-secondary transition-all duration-300 transform hover:scale-105 mobile-menu-item ${
+              className={`text-white text-xl font-medium hover:text-secondary transition-all duration-300 transform hover:scale-105 mobile-menu-item cursor-pointer ${
                 activeSection === section ? 'border-b-2 border-white pb-1' : ''
               }`}
               style={{ 
                 transitionDelay: `${index * 0.1}s`
               }}
-              onClick={(e) => handleSmoothScroll(e, section)}
-              onTouchEnd={(e) => handleSmoothScroll(e, section)}
+              onClick={() => handleDirectNavigation(section)}
             >
               {section.charAt(0).toUpperCase() + section.slice(1)}
-            </Link>
+            </div>
           ))}
           
-          <Link 
-            href="#reservation" 
-            className="mt-6 btn bg-white text-primary hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 w-3/4 max-w-xs mobile-menu-item"
+          <div 
+            className="mt-6 btn bg-white text-primary hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 w-3/4 max-w-xs mobile-menu-item cursor-pointer"
             style={{ 
               transitionDelay: '0.5s'
             }}
-            onClick={(e) => handleSmoothScroll(e, 'contact')}
-            onTouchEnd={(e) => handleSmoothScroll(e, 'contact')}
+            onClick={() => handleDirectNavigation('contact')}
           >
             Reserve a Table
-          </Link>
+          </div>
           
           {/* Social Media Icons */}
           <div 
