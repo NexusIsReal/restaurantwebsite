@@ -66,20 +66,22 @@ export default function Navbar() {
     };
   }, [prevScrollY, scrollDirection]);
 
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isMenuOpen]);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+    // Force body to be fixed when menu is open to prevent scrolling
+    if (!isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
   };
 
   // Function to handle smooth scrolling
@@ -204,13 +206,46 @@ export default function Navbar() {
 
       {/* Mobile Menu - Full Screen Overlay */}
       <div 
-        className={`fixed inset-0 bg-primary bg-opacity-95 z-40 flex flex-col justify-center transition-all duration-500 md:hidden ${
+        className={`fixed inset-0 bg-primary bg-opacity-95 z-50 flex flex-col justify-center items-center transition-all duration-500 md:hidden ${
           isMenuOpen 
             ? 'opacity-100 visible mobile-menu-overlay' 
             : 'opacity-0 invisible'
         } ${isMenuOpen ? 'mobile-menu-open' : ''}`}
+        style={{
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh'
+        }}
       >
-        <div className="container py-8 flex flex-col items-center space-y-6 text-center">
+        <div className="container mx-auto py-8 flex flex-col items-center space-y-8 text-center">
+          <button 
+            className="absolute top-6 right-6 text-white hover:text-secondary transition-all duration-300"
+            onClick={toggleMenu}
+            aria-label="Close menu"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="w-8 h-8" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M6 18L18 6M6 6l12 12" 
+              />
+            </svg>
+          </button>
+          
+          <div className="mt-12 mb-4 text-white text-2xl font-bold font-serif">
+            NEXUS
+          </div>
+          
           {['about', 'menu', 'testimonials', 'contact'].map((section, index) => (
             <Link 
               key={section}
@@ -232,7 +267,7 @@ export default function Navbar() {
           
           <Link 
             href="#reservation" 
-            className="mt-4 btn bg-white text-primary hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 w-3/4 max-w-xs mobile-menu-item"
+            className="mt-6 btn bg-white text-primary hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 w-3/4 max-w-xs mobile-menu-item"
             style={{ 
               transitionDelay: '0.5s'
             }}
@@ -246,7 +281,7 @@ export default function Navbar() {
           
           {/* Social Media Icons */}
           <div 
-            className="flex space-x-6 mt-8 mobile-menu-item"
+            className="flex space-x-8 mt-10 mobile-menu-item"
             style={{ 
               transitionDelay: '0.6s'
             }}
@@ -260,7 +295,7 @@ export default function Navbar() {
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
-                  className="h-5 w-5" 
+                  className="h-6 w-6" 
                   fill="currentColor" 
                   viewBox="0 0 24 24"
                 >
