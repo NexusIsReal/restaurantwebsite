@@ -23,6 +23,47 @@
     overflow-x: hidden;
     width: 100%;
   }
+
+  /* Custom Scrollbar Styles */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: rgba(243, 244, 246, 0.8);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #f97316, #ea580c);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #ea580c, #c2410c);
+    animation: none;
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #f97316 rgba(243, 244, 246, 0.8);
+  }
+
+  /* Scrollbar animation */
+  @keyframes pulse {
+    0% {
+      background: linear-gradient(to bottom, #f97316, #ea580c);
+    }
+    50% {
+      background: linear-gradient(to bottom, #ea580c, #f97316);
+    }
+    100% {
+      background: linear-gradient(to bottom, #f97316, #ea580c);
+    }
+  }
 }
 
 @layer components {
@@ -51,6 +92,46 @@
   .hide-scrollbar {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+  }
+
+  /* Custom horizontal scrollbar for menu categories */
+  .menu-scrollbar::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+  }
+
+  .menu-scrollbar::-webkit-scrollbar-track {
+    background-color: rgba(243, 244, 246, 0.4);
+    border-radius: 10px;
+  }
+
+  .menu-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(249, 115, 22, 0.6);
+    border-radius: 10px;
+    animation: glow 2s infinite;
+  }
+
+  .menu-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(249, 115, 22, 0.8);
+    animation: none;
+  }
+
+  .menu-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(249, 115, 22, 0.6) rgba(243, 244, 246, 0.4);
+  }
+
+  /* Menu scrollbar animation */
+  @keyframes glow {
+    0% {
+      background: rgba(249, 115, 22, 0.6);
+    }
+    50% {
+      background: rgba(249, 115, 22, 0.8);
+    }
+    100% {
+      background: rgba(249, 115, 22, 0.6);
+    }
   }
   
   /* Mobile text adjustments */

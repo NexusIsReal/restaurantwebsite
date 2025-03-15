@@ -55,6 +55,28 @@ export default function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Function to handle smooth scrolling
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const targetElement = document.getElementById(targetId);
+    
+    if (targetElement) {
+      // Close mobile menu if open
+      if (isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+      
+      // Scroll to the target element
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+      
+      // Update URL hash
+      window.history.pushState(null, '', `#${targetId}`);
+    }
+  };
+
   const getLinkClass = (section: string) => {
     const baseClass = 'transition-all duration-300';
     const colorClass = scrolled 
@@ -90,30 +112,35 @@ export default function Navbar() {
           <Link 
             href="#about" 
             className={getLinkClass('about')}
+            onClick={(e) => handleSmoothScroll(e, 'about')}
           >
             About
           </Link>
           <Link 
             href="#menu" 
             className={getLinkClass('menu')}
+            onClick={(e) => handleSmoothScroll(e, 'menu')}
           >
             Menu
           </Link>
           <Link 
             href="#testimonials" 
             className={getLinkClass('testimonials')}
+            onClick={(e) => handleSmoothScroll(e, 'testimonials')}
           >
             Testimonials
           </Link>
           <Link 
             href="#contact" 
             className={getLinkClass('contact')}
+            onClick={(e) => handleSmoothScroll(e, 'contact')}
           >
             Contact
           </Link>
           <Link 
             href="#reservation" 
             className={`btn btn-primary transform transition-transform duration-300 hover:scale-105 text-sm lg:text-base`}
+            onClick={(e) => handleSmoothScroll(e, 'contact')}
           >
             Reserve a Table
           </Link>
@@ -170,7 +197,10 @@ export default function Navbar() {
                 activeSection === section ? 'border-b-2 border-white pb-1' : ''
               } animate-fade-in-up`}
               style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={toggleMenu}
+              onClick={(e) => {
+                handleSmoothScroll(e, section);
+                toggleMenu();
+              }}
             >
               {section.charAt(0).toUpperCase() + section.slice(1)}
             </Link>
@@ -180,7 +210,10 @@ export default function Navbar() {
             href="#reservation" 
             className="mt-4 btn bg-white text-primary hover:bg-opacity-90 transform hover:scale-105 transition-transform animate-fade-in-up w-3/4 max-w-xs"
             style={{ animationDelay: '0.5s' }}
-            onClick={toggleMenu}
+            onClick={(e) => {
+              handleSmoothScroll(e, 'contact');
+              toggleMenu();
+            }}
           >
             Reserve a Table
           </Link>

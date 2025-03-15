@@ -100,7 +100,7 @@ export default function Menu() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <div className="flex overflow-x-auto pb-2 mb-8 sm:mb-12 hide-scrollbar">
+          <div className="flex overflow-x-auto pb-2 mb-8 sm:mb-12 menu-scrollbar">
             <div className="flex space-x-2 mx-auto">
               {categories.map((category, index) => (
                 <button
