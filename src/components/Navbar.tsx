@@ -85,31 +85,43 @@ export default function Navbar() {
   };
 
   // Function to handle smooth scrolling
-  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement> | React.TouchEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     const targetElement = document.getElementById(targetId);
     
     if (targetElement) {
-      // Close mobile menu if open
-      if (isMenuOpen) {
-        setIsMenuOpen(false);
-      }
-      
-      // Calculate offset for fixed header
+      // Calculate offset for fixed header - add extra padding for mobile
       const navHeight = navRef.current?.offsetHeight || 0;
-      const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navHeight;
+      const isMobile = window.innerWidth < 768;
+      const mobileOffset = isMobile ? 20 : 0; // Extra offset for mobile
+      const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navHeight - mobileOffset;
+      
+      // First update URL hash
+      window.history.pushState(null, '', `#${targetId}`);
+      
+      // Set active section
+      setActiveSection(targetId);
+      
+      // Handle menu closing with a slight delay to allow scrolling to start
+      if (isMenuOpen) {
+        // Small timeout to ensure the scroll happens before menu closes
+        setTimeout(() => {
+          // Reset body styles
+          document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.width = '';
+          document.body.style.top = '';
+          
+          // Close the menu
+          setIsMenuOpen(false);
+        }, 300);
+      }
       
       // Scroll to the target element
       window.scrollTo({
         top: targetPosition,
         behavior: 'smooth'
       });
-      
-      // Update URL hash
-      window.history.pushState(null, '', `#${targetId}`);
-      
-      // Set active section
-      setActiveSection(targetId);
     }
   };
 
@@ -154,6 +166,7 @@ export default function Navbar() {
               href={`#${section}`} 
               className={getLinkClass(section)}
               onClick={(e) => handleSmoothScroll(e, section)}
+              onTouchEnd={(e) => handleSmoothScroll(e, section)}
             >
               {section.charAt(0).toUpperCase() + section.slice(1)}
               <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-primary transform scale-x-0 transition-transform duration-300 ${
@@ -165,6 +178,7 @@ export default function Navbar() {
             href="#reservation" 
             className={`btn btn-primary transform transition-transform duration-300 hover:scale-105 text-sm lg:text-base`}
             onClick={(e) => handleSmoothScroll(e, 'contact')}
+            onTouchEnd={(e) => handleSmoothScroll(e, 'contact')}
           >
             Reserve a Table
           </Link>
@@ -256,10 +270,8 @@ export default function Navbar() {
               style={{ 
                 transitionDelay: `${index * 0.1}s`
               }}
-              onClick={(e) => {
-                handleSmoothScroll(e, section);
-                toggleMenu();
-              }}
+              onClick={(e) => handleSmoothScroll(e, section)}
+              onTouchEnd={(e) => handleSmoothScroll(e, section)}
             >
               {section.charAt(0).toUpperCase() + section.slice(1)}
             </Link>
@@ -271,10 +283,8 @@ export default function Navbar() {
             style={{ 
               transitionDelay: '0.5s'
             }}
-            onClick={(e) => {
-              handleSmoothScroll(e, 'contact');
-              toggleMenu();
-            }}
+            onClick={(e) => handleSmoothScroll(e, 'contact')}
+            onTouchEnd={(e) => handleSmoothScroll(e, 'contact')}
           >
             Reserve a Table
           </Link>
