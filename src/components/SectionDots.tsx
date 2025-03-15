@@ -88,7 +88,6 @@ export default function SectionDots() {
           </div>
         ))}
       </div>
-      <div className="w-px h-24 bg-gray-300 mt-4"></div>
     </div>
   );
 } 
