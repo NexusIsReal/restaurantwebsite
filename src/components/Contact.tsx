@@ -57,13 +57,11 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
     setTimeout(() => {
       console.log('Form submitted:', formData);
       setIsSubmitting(false);
       setIsSubmitted(true);
       
-      // Reset form after showing success message
       setTimeout(() => {
         setFormData({
           name: '',

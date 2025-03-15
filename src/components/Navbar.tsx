@@ -8,17 +8,14 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
 
-  // Handle scroll event to change navbar appearance and track active section
   useEffect(() => {
     const handleScroll = () => {
-      // Change navbar appearance
       if (window.scrollY > 50) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
 
-      // Track active section for highlighting nav links
       const sections = ['about', 'menu', 'testimonials', 'contact'];
       let currentSection = '';
 
@@ -34,17 +31,14 @@ export default function Navbar() {
 
       setActiveSection(currentSection);
     };
-
-    // Add scroll event listener
+    
     window.addEventListener('scroll', handleScroll);
     
-    // Clean up the event listener
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -61,7 +55,6 @@ export default function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Function to determine link classes based on scroll state and active section
   const getLinkClass = (section: string) => {
     const baseClass = 'transition-all duration-300';
     const colorClass = scrolled 

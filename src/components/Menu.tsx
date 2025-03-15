@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-// Define types for menu items
 type MenuItem = {
   name: string;
   description: string;
