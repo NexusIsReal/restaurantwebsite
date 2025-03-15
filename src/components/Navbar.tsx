@@ -170,15 +170,15 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <button 
-          className={`md:hidden focus:outline-none transition-colors z-50 ${
-            isMenuOpen ? 'text-white' : (scrolled ? 'text-secondary' : 'text-white')
+          className={`md:hidden focus:outline-none transition-all duration-300 z-50 ${
+            isMenuOpen ? 'text-white rotate-90' : (scrolled ? 'text-secondary' : 'text-white')
           }`}
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
-            className="w-6 h-6" 
+            className="w-6 h-6 transition-transform duration-300" 
             fill="none" 
             viewBox="0 0 24 24" 
             stroke="currentColor"
@@ -206,19 +206,21 @@ export default function Navbar() {
       <div 
         className={`fixed inset-0 bg-primary bg-opacity-95 z-40 flex flex-col justify-center transition-all duration-500 md:hidden ${
           isMenuOpen 
-            ? 'opacity-100 visible' 
+            ? 'opacity-100 visible mobile-menu-overlay' 
             : 'opacity-0 invisible'
-        }`}
+        } ${isMenuOpen ? 'mobile-menu-open' : ''}`}
       >
         <div className="container py-8 flex flex-col items-center space-y-6 text-center">
           {['about', 'menu', 'testimonials', 'contact'].map((section, index) => (
             <Link 
               key={section}
               href={`#${section}`} 
-              className={`text-white text-xl font-medium hover:text-secondary transition-colors transform hover:scale-105 transition-transform ${
+              className={`text-white text-xl font-medium hover:text-secondary transition-all duration-300 transform hover:scale-105 mobile-menu-item ${
                 activeSection === section ? 'border-b-2 border-white pb-1' : ''
-              } animate-fade-in-up`}
-              style={{ animationDelay: `${index * 0.1}s` }}
+              }`}
+              style={{ 
+                transitionDelay: `${index * 0.1}s`
+              }}
               onClick={(e) => {
                 handleSmoothScroll(e, section);
                 toggleMenu();
@@ -230,8 +232,10 @@ export default function Navbar() {
           
           <Link 
             href="#reservation" 
-            className="mt-4 btn bg-white text-primary hover:bg-opacity-90 transform hover:scale-105 transition-transform animate-fade-in-up w-3/4 max-w-xs"
-            style={{ animationDelay: '0.5s' }}
+            className="mt-4 btn bg-white text-primary hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 w-3/4 max-w-xs mobile-menu-item"
+            style={{ 
+              transitionDelay: '0.5s'
+            }}
             onClick={(e) => {
               handleSmoothScroll(e, 'contact');
               toggleMenu();
@@ -241,12 +245,17 @@ export default function Navbar() {
           </Link>
           
           {/* Social Media Icons */}
-          <div className="flex space-x-6 mt-8 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+          <div 
+            className="flex space-x-6 mt-8 mobile-menu-item"
+            style={{ 
+              transitionDelay: '0.6s'
+            }}
+          >
             {['facebook', 'instagram', 'twitter'].map((social) => (
               <a 
                 key={social}
                 href="#" 
-                className="text-white hover:text-secondary transition-colors transform hover:scale-110 transition-transform"
+                className="text-white hover:text-secondary transition-all duration-300 transform hover:scale-110"
                 aria-label={social}
               >
                 <svg 
