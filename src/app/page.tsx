@@ -7,12 +7,14 @@ import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import ScrollToTop from '../components/ScrollToTop';
 import ScrollProgressBar from '../components/ScrollProgressBar';
+import SectionDots from '../components/SectionDots';
 
 export default function Home() {
   return (
     <main>
       <ScrollProgressBar />
       <Navbar />
+      <SectionDots />
       <Hero />
       <About />
       <Menu />

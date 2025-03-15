@@ -1,21 +1,47 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
+  const [prevScrollY, setPrevScrollY] = useState(0);
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
+      const currentScrollY = window.scrollY;
+      
+      // Determine scroll direction
+      if (currentScrollY > prevScrollY) {
+        setScrollDirection('down');
+      } else if (currentScrollY < prevScrollY) {
+        setScrollDirection('up');
+      }
+      
+      // Hide/show navbar based on scroll direction and position
+      if (currentScrollY > 100) {
+        if (scrollDirection === 'down' && currentScrollY - prevScrollY > 10) {
+          setIsNavVisible(false);
+        } else if (scrollDirection === 'up') {
+          setIsNavVisible(true);
+        }
+      } else {
+        setIsNavVisible(true);
+      }
+      
+      // Change navbar appearance
+      if (currentScrollY > 50) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
 
+      // Track active section for highlighting nav links
       const sections = ['about', 'menu', 'testimonials', 'contact'];
       let currentSection = '';
 
@@ -30,6 +56,7 @@ export default function Navbar() {
       });
 
       setActiveSection(currentSection);
+      setPrevScrollY(currentScrollY);
     };
     
     window.addEventListener('scroll', handleScroll);
@@ -37,7 +64,7 @@ export default function Navbar() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [prevScrollY, scrollDirection]);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -66,24 +93,31 @@ export default function Navbar() {
         setIsMenuOpen(false);
       }
       
+      // Calculate offset for fixed header
+      const navHeight = navRef.current?.offsetHeight || 0;
+      const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navHeight;
+      
       // Scroll to the target element
-      targetElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
       });
       
       // Update URL hash
       window.history.pushState(null, '', `#${targetId}`);
+      
+      // Set active section
+      setActiveSection(targetId);
     }
   };
 
   const getLinkClass = (section: string) => {
-    const baseClass = 'transition-all duration-300';
+    const baseClass = 'transition-all duration-300 relative';
     const colorClass = scrolled 
       ? 'text-secondary hover:text-primary' 
       : 'text-white hover:text-primary';
     const activeClass = activeSection === section 
-      ? 'font-medium border-b-2 border-primary pb-1' 
+      ? 'font-medium active-nav-link' 
       : '';
     
     return `${baseClass} ${colorClass} ${activeClass}`;
@@ -91,10 +125,13 @@ export default function Navbar() {
 
   return (
     <nav 
+      ref={navRef}
       className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${
         scrolled 
           ? 'bg-white shadow-md py-2' 
           : 'bg-transparent py-4'
+      } ${
+        isNavVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
       <div className="container flex items-center justify-between">
@@ -109,34 +146,19 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
-          <Link 
-            href="#about" 
-            className={getLinkClass('about')}
-            onClick={(e) => handleSmoothScroll(e, 'about')}
-          >
-            About
-          </Link>
-          <Link 
-            href="#menu" 
-            className={getLinkClass('menu')}
-            onClick={(e) => handleSmoothScroll(e, 'menu')}
-          >
-            Menu
-          </Link>
-          <Link 
-            href="#testimonials" 
-            className={getLinkClass('testimonials')}
-            onClick={(e) => handleSmoothScroll(e, 'testimonials')}
-          >
-            Testimonials
-          </Link>
-          <Link 
-            href="#contact" 
-            className={getLinkClass('contact')}
-            onClick={(e) => handleSmoothScroll(e, 'contact')}
-          >
-            Contact
-          </Link>
+          {['about', 'menu', 'testimonials', 'contact'].map((section) => (
+            <Link 
+              key={section}
+              href={`#${section}`} 
+              className={getLinkClass(section)}
+              onClick={(e) => handleSmoothScroll(e, section)}
+            >
+              {section.charAt(0).toUpperCase() + section.slice(1)}
+              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-primary transform scale-x-0 transition-transform duration-300 ${
+                activeSection === section ? 'scale-x-100' : ''
+              }`}></span>
+            </Link>
+          ))}
           <Link 
             href="#reservation" 
             className={`btn btn-primary transform transition-transform duration-300 hover:scale-105 text-sm lg:text-base`}
